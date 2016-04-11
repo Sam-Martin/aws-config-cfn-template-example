@@ -1,0 +1,264 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Metadata": {
+    "AWS::CloudFormation::Designer": {
+      "2fae6a7c-8deb-409f-80e9-656c9c2af97e": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 160,
+          "y": 10
+        },
+        "z": 1,
+        "embeds": [],
+        "isrelatedto": [
+          "2fae6a7c-8deb-409f-80e9-656c9c2af97e"
+        ]
+      },
+      "e8b213de-9036-40e2-a840-c56b06d9b1bc": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 30,
+          "y": 90
+        },
+        "z": 1,
+        "embeds": [],
+        "dependson": [
+          "2fae6a7c-8deb-409f-80e9-656c9c2af97e"
+        ],
+        "isrelatedto": [
+          "2fae6a7c-8deb-409f-80e9-656c9c2af97e"
+        ]
+      },
+      "26a623f6-ca27-4851-bd71-577d56bd9a95": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 360,
+          "y": 90
+        },
+        "z": 1,
+        "embeds": [],
+        "dependson": [
+          "2fae6a7c-8deb-409f-80e9-656c9c2af97e",
+          "e8b213de-9036-40e2-a840-c56b06d9b1bc"
+        ]
+      },
+      "3e3ce7aa-4c28-49ce-9b4f-5364e7990624": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 30,
+          "y": 10
+        },
+        "z": 1,
+        "embeds": [],
+        "dependson": [
+          "2fae6a7c-8deb-409f-80e9-656c9c2af97e"
+        ]
+      }
+    }
+  },
+  "Resources": {
+    "AWSConfigRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "config.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSConfigRole"
+        ],
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "",
+                [
+                  "AWSConfigDeliveryPermissions-",
+                  {
+                    "Ref": "AWS::Region"
+                  }
+                ]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "Stmt1460390265000",
+                  "Effect": "Allow",
+                  "Action": [
+                    "config:Put*"
+                  ],
+                  "Resource": [
+                    "*"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:PutObject*"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:s3:::",
+                          {
+                            "Ref": "DeliveryChannelS3Bucket"
+                          },
+                          "/AWSLogs/",
+                          {
+                            "Ref": "DeliveryChannelS3Prefix"
+                          },
+                          "/*"
+                        ]
+                      ]
+                    }
+                  ],
+                  "Condition": {
+                    "StringLike": {
+                      "s3:x-amz-acl": "bucket-owner-full-control"
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetBucketAcl"
+                  ],
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:aws:s3:::",
+                        {
+                          "Ref": "DeliveryChannelS3Bucket"
+                        }
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "2fae6a7c-8deb-409f-80e9-656c9c2af97e"
+        }
+      }
+    },
+    "ConfigurationRecorder": {
+      "Type": "AWS::Config::ConfigurationRecorder",
+      "Properties": {
+        "Name": {
+          "Ref": "ConfigurationRecorderName"
+        },
+        "RecordingGroup": {
+          "AllSupported": true,
+          "IncludeGlobalResourceTypes": true
+        },
+        "RoleARN": {
+          "Fn::GetAtt": [
+            "AWSConfigRole",
+            "Arn"
+          ]
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "e8b213de-9036-40e2-a840-c56b06d9b1bc"
+        }
+      },
+      "DependsOn": [
+        "AWSConfigRole"
+      ]
+    },
+    "CloudTrailEnabled": {
+      "Type": "AWS::Config::ConfigRule",
+      "Properties": {
+        "Source": {
+          "Owner": "AWS",
+          "SourceIdentifier": "CLOUD_TRAIL_ENABLED"
+        },
+        "InputParameters": {
+          "s3BucketName": {
+            "Ref": "CloudTrailS3Bucket"
+          }
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "26a623f6-ca27-4851-bd71-577d56bd9a95"
+        }
+      },
+      "DependsOn": [
+        "AWSConfigRole",
+        "ConfigurationRecorder"
+      ]
+    },
+    "S3BucketDeliveryChannel": {
+      "Type": "AWS::Config::DeliveryChannel",
+      "Properties": {
+        "S3BucketName": {
+          "Ref": "DeliveryChannelS3Bucket"
+        },
+        "S3KeyPrefix": {
+          "Ref": "DeliveryChannelS3Prefix"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "3e3ce7aa-4c28-49ce-9b4f-5364e7990624"
+        }
+      },
+      "DependsOn": [
+        "AWSConfigRole"
+      ]
+    }
+  },
+  "Parameters": {
+    "DeliveryChannelS3Bucket": {
+      "Type": "String",
+      "Description": "The full ARN of the bucket to which you wish to periodically push config snapshots."
+    },
+    "DeliveryChannelS3Prefix": {
+      "Type": "String",
+      "Description": "The key prefix ('folder') into which to insert config snapshots"
+    },
+    "ConfigurationRecorderName": {
+      "Type": "String",
+      "Description": "The name to give the Configuration Recorder (use the same name as the existing Configuration Recorder if you experience a 'maximum number of configuration recorders: 1 is reached.' error."
+    },
+    "CloudTrailS3Bucket": {
+      "Type": "String",
+      "Description": "The name of the S3 bucket to which you should be pushing CloudTrail logs."
+    }
+  }
+}
