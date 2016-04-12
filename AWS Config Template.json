@@ -223,7 +223,7 @@
               [
                 "// dependencies",
                 "var AWS = require('aws-sdk');",
-                "//var response = require('cfn-response');",
+                "var response = require('cfn-response');",
                 "var configservice = new AWS.ConfigService();",
                 "exports.handler = function(event, context, callback) {",
                 "    ",
@@ -234,6 +234,7 @@
                 "        if(data.ConfigurationRecorders.length > 0){",
                 "            // successful response",
                 "            var configurationRecorders = data",
+                "            console.log('Found Configuration Recoder: ' + configurationRecorders.ConfigurationRecorders[0].name);",
                 "            console.log('Checking for the existence of a Delivery Channel')",
                 "            configservice.describeDeliveryChannels(null, function(err, data) {",
                 "                if (err) console.log(err, err.stack); // an error occurred",
@@ -263,7 +264,7 @@
                 "            console.log('Setting the Configuration Recorder\\'s IAM role to the one created by our CFN stack: ' + event.ResourceProperties.RoleARN)",
                 "            var params = {",
                 "              ConfigurationRecorder: {",
-                "                name: 'configurationRecorders.ConfigurationRecorders[0].name',",
+                "                name: configurationRecorders.ConfigurationRecorders[0].name,",
                 "                recordingGroup: configurationRecorders.ConfigurationRecorders[0].recordingGroup,",
                 "                roleARN: event.ResourceProperties.RoleARN",
                 "              }",
@@ -274,10 +275,10 @@
                 "            });",
                 "            ",
                 "            // Return the name of the configuration recorder as one exists",
-                "           // response.send(event, context, response.SUCCESS, {'ConfigurationRecorder':configurationRecorders.ConfigurationRecorders[0].name});",
+                "            response.send(event, context, response.SUCCESS, {'ConfigurationRecorder':configurationRecorders.ConfigurationRecorders[0].name});",
                 "        }else{",
                 "            console.log('No Configuration Records exist, returning default recorder name')",
-                "           // response.send(event, context, response.SUCCESS, {'ConfigurationRecorder':'ConfigurationRecorder'});",
+                "            response.send(event, context, response.SUCCESS, {'ConfigurationRecorder':'ConfigurationRecorder'});",
                 "        }",
                 "      }   ",
                 "    });",
@@ -386,11 +387,11 @@
                           {
                             "Ref": "DeliveryChannelS3Bucket"
                           },
-                          "/AWSLogs/",
+                          "/",
                           {
                             "Ref": "DeliveryChannelS3Prefix"
                           },
-                          "/*"
+                          "/AWSLogs/*"
                         ]
                       ]
                     }
