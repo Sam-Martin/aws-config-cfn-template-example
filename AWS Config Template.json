@@ -8,8 +8,8 @@
           "height": 60
         },
         "position": {
-          "x": 160,
-          "y": 10
+          "x": -270,
+          "y": 20
         },
         "z": 1,
         "embeds": [],
@@ -23,16 +23,18 @@
           "height": 60
         },
         "position": {
-          "x": 30,
-          "y": 90
+          "x": 290,
+          "y": 150
         },
         "z": 1,
         "embeds": [],
         "dependson": [
-          "2fae6a7c-8deb-409f-80e9-656c9c2af97e"
+          "2fae6a7c-8deb-409f-80e9-656c9c2af97e",
+          "3e3ce7aa-4c28-49ce-9b4f-5364e7990624"
         ],
         "isrelatedto": [
-          "2fae6a7c-8deb-409f-80e9-656c9c2af97e"
+          "2fae6a7c-8deb-409f-80e9-656c9c2af97e",
+          "979098a4-a628-4395-9ac7-f43e1bfaa5ae"
         ]
       },
       "26a623f6-ca27-4851-bd71-577d56bd9a95": {
@@ -41,8 +43,8 @@
           "height": 60
         },
         "position": {
-          "x": 360,
-          "y": 90
+          "x": 410,
+          "y": 150
         },
         "z": 1,
         "embeds": [],
@@ -57,18 +59,271 @@
           "height": 60
         },
         "position": {
-          "x": 30,
-          "y": 10
+          "x": 160,
+          "y": 150
         },
         "z": 1,
         "embeds": [],
         "dependson": [
+          "2fae6a7c-8deb-409f-80e9-656c9c2af97e",
+          "979098a4-a628-4395-9ac7-f43e1bfaa5ae"
+        ]
+      },
+      "35068c5c-09da-458a-81d6-500395ea7292": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": -270,
+          "y": 150
+        },
+        "z": 1,
+        "embeds": []
+      },
+      "c75421bc-df03-4964-87b7-b848690b1a7c": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": -140,
+          "y": 160
+        },
+        "z": 1,
+        "embeds": [],
+        "isrelatedto": [
+          "35068c5c-09da-458a-81d6-500395ea7292"
+        ]
+      },
+      "979098a4-a628-4395-9ac7-f43e1bfaa5ae": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 20,
+          "y": 150
+        },
+        "z": 1,
+        "embeds": [],
+        "isrelatedto": [
+          "c75421bc-df03-4964-87b7-b848690b1a7c",
           "2fae6a7c-8deb-409f-80e9-656c9c2af97e"
         ]
+      },
+      "ed297316-819b-40fe-822a-b77b87dc4a85": {
+        "source": {
+          "id": "3e3ce7aa-4c28-49ce-9b4f-5364e7990624",
+          "selector": "g:nth-child(1) g:nth-child(4) g:nth-child(2) circle:nth-child(1)     ",
+          "port": "AWS::DependencyLink-*"
+        },
+        "target": {
+          "x": 150,
+          "y": 180
+        },
+        "z": 13
+      },
+      "d62b14a1-5b06-48cc-8832-2cc84985138b": {
+        "source": {
+          "id": "c75421bc-df03-4964-87b7-b848690b1a7c",
+          "selector": "g:nth-child(1) g:nth-child(4) g:nth-child(1) circle:nth-child(1)     ",
+          "port": "AWS::DependencyLink-*"
+        },
+        "target": {
+          "x": 20,
+          "y": 290
+        },
+        "z": 14
       }
     }
   },
   "Resources": {
+    "LambdaExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "root",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                 {
+                    "Sid": "Stmt1460475162000",
+                    "Effect": "Allow",
+                    "Action": [
+                        "iam:PassRole"
+                    ],
+                    "Resource": [
+                        {
+                          "Fn::GetAtt": [
+                            "AWSConfigRole",
+                            "Arn"
+                          ]
+                        }
+                    ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "arn:aws:logs:*:*:*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "config:DeleteDeliveryChannel",
+                    "config:DescribeConfigurationRecorders",
+                    "config:DescribeDeliveryChannels",
+                    "config:PutConfigurationRecorder",
+                    "config:StopConfigurationRecorder"
+                  ],
+                  "Resource": [
+                    "*"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "35068c5c-09da-458a-81d6-500395ea7292"
+        }
+      }
+    },
+    "ConfigurationRecorderSanitiser": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": {
+            "Fn::Join": [
+              "\n",
+              [
+                "// dependencies",
+                "var AWS = require('aws-sdk');",
+                "//var response = require('cfn-response');",
+                "var configservice = new AWS.ConfigService();",
+                "exports.handler = function(event, context, callback) {",
+                "    ",
+                "    console.log('Checking if a configuration recorder exists')",
+                "    configservice.describeConfigurationRecorders(null, function(err, data) {",
+                "      if (err) console.log(err, err.stack); // an error occurred",
+                "      else{",
+                "        if(data.ConfigurationRecorders.length > 0){",
+                "            // successful response",
+                "            var configurationRecorders = data",
+                "            console.log('Checking for the existence of a Delivery Channel')",
+                "            configservice.describeDeliveryChannels(null, function(err, data) {",
+                "                if (err) console.log(err, err.stack); // an error occurred",
+                "                else{",
+                "                    if(data.DeliveryChannels.length > 0){",
+                "                        console.log('There is a Delivery Channel, let\\'s delete it!')",
+                "                        deliveryChannels = data",
+                "                        console.log('Making sure the Delivery Recorder is stopped')",
+                "                        var params = { ConfigurationRecorderName: configurationRecorders.ConfigurationRecorders[0].name};",
+                "                        configservice.stopConfigurationRecorder(params, function(err, data) {",
+                "                          if (err) console.log(err, err.stack); // an error occurred",
+                "                          else{",
+                "                              console.log('Deleting Delivery Channel')",
+                "                               params = { DeliveryChannelName: deliveryChannels.DeliveryChannels[0].name }",
+                "                                configservice.deleteDeliveryChannel(params, function(err, data) {",
+                "                                  if (err) console.log(err, err.stack); // an error occurred",
+                "                                  else  console.log('Successfully deleted Delivery Channel')    // successful response",
+                "                                });",
+                "                          }   ",
+                "                        }); ",
+                "                    }else{",
+                "                        console.log('No Delivery Channel to Delete')",
+                "                    }",
+                "                }",
+                "            })",
+                "            ",
+                "            console.log('Setting the Configuration Recorder\\'s IAM role to the one created by our CFN stack: ' + event.ResourceProperties.RoleARN)",
+                "            var params = {",
+                "              ConfigurationRecorder: {",
+                "                name: 'configurationRecorders.ConfigurationRecorders[0].name',",
+                "                recordingGroup: configurationRecorders.ConfigurationRecorders[0].recordingGroup,",
+                "                roleARN: event.ResourceProperties.RoleARN",
+                "              }",
+                "            };",
+                "            configservice.putConfigurationRecorder(params, function(err, data) {",
+                "              if (err) console.log(err, err.stack); // an error occurred",
+                "              else     console.log('Successfull set the Configuration Recorder\\'s IAM role to the one created by our CFN stack');           // successful response",
+                "            });",
+                "            ",
+                "            // Return the name of the configuration recorder as one exists",
+                "           // response.send(event, context, response.SUCCESS, {'ConfigurationRecorder':configurationRecorders.ConfigurationRecorders[0].name});",
+                "        }else{",
+                "            console.log('No Configuration Records exist, returning default recorder name')",
+                "           // response.send(event, context, response.SUCCESS, {'ConfigurationRecorder':'ConfigurationRecorder'});",
+                "        }",
+                "      }   ",
+                "    });",
+                "};"
+              ]
+            ]
+          }
+        },
+        "Handler": "index.handler",
+        "Runtime": "nodejs",
+        "Timeout": "30",
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaExecutionRole",
+            "Arn"
+          ]
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "c75421bc-df03-4964-87b7-b848690b1a7c"
+        }
+      }
+    },
+    "ConfigurationRecorderSanitisationResults": {
+      "Type": "Custom::ConfigurationRecorderSanitisationResults",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "ConfigurationRecorderSanitiser",
+            "Arn"
+          ]
+        },
+        "RoleARN": {
+          "Fn::GetAtt": [
+            "AWSConfigRole",
+            "Arn"
+          ]
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "979098a4-a628-4395-9ac7-f43e1bfaa5ae"
+        }
+      }
+    },
     "AWSConfigRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -173,7 +428,10 @@
       "Type": "AWS::Config::ConfigurationRecorder",
       "Properties": {
         "Name": {
-          "Ref": "ConfigurationRecorderName"
+          "Fn::GetAtt": [
+            "ConfigurationRecorderSanitisationResults",
+            "ConfigurationRecorder"
+          ]
         },
         "RecordingGroup": {
           "AllSupported": true,
@@ -235,7 +493,8 @@
         }
       },
       "DependsOn": [
-        "AWSConfigRole"
+        "AWSConfigRole",
+        "ConfigurationRecorderSanitisationResults"
       ]
     }
   },
@@ -247,10 +506,6 @@
     "DeliveryChannelS3Prefix": {
       "Type": "String",
       "Description": "The key prefix ('folder') into which to insert config snapshots"
-    },
-    "ConfigurationRecorderName": {
-      "Type": "String",
-      "Description": "The name to give the Configuration Recorder (use the same name as the existing Configuration Recorder if you experience a 'maximum number of configuration recorders: 1 is reached.' error."
     },
     "CloudTrailS3Bucket": {
       "Type": "String",
