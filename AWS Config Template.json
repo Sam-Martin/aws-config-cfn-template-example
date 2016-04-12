@@ -139,12 +139,7 @@
                         ]
                       ]
                     }
-                  ],
-                  "Condition": {
-                    "StringLike": {
-                      "s3:x-amz-acl": "bucket-owner-full-control"
-                    }
-                  }
+                  ]
                 },
                 {
                   "Effect": "Allow",
@@ -197,7 +192,8 @@
         }
       },
       "DependsOn": [
-        "AWSConfigRole"
+        "AWSConfigRole",
+        "DeliveryChannel"
       ]
     },
     "CloudTrailEnabled": {
@@ -219,13 +215,13 @@
         }
       },
       "DependsOn": [
-        "AWSConfigRole",
         "ConfigurationRecorder"
       ]
     },
-    "S3BucketDeliveryChannel": {
+    "DeliveryChannel": {
       "Type": "AWS::Config::DeliveryChannel",
       "Properties": {
+        "Name": "default",
         "S3BucketName": {
           "Ref": "DeliveryChannelS3Bucket"
         },
