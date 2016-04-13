@@ -1,0 +1,45 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Metadata": {
+    "AWS::CloudFormation::Designer": {
+      "0d3a4d9c-fa63-411e-8d04-87cb6b44690b": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 579,
+          "y": 210
+        },
+        "z": 0
+      }
+    }
+  },
+  "Resources": {
+    "CloudTrailEnabled": {
+      "Type": "AWS::Config::ConfigRule",
+      "Properties": {
+        "Source": {
+          "Owner": "AWS",
+          "SourceIdentifier": "CLOUD_TRAIL_ENABLED"
+        },
+        "InputParameters": {
+          "s3BucketName": {
+            "Ref": "CloudTrailS3Bucket"
+          }
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "26a623f6-ca27-4851-bd71-577d56bd9a95"
+        }
+      }
+    }
+  },
+  "Parameters": {
+    "CloudTrailS3Bucket": {
+      "Type": "String",
+      "Description": "The name of the S3 bucket to which you should be pushing CloudTrail logs."
+    }
+  }
+}

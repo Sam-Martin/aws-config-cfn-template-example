@@ -79,7 +79,10 @@
           "y": 150
         },
         "z": 1,
-        "embeds": []
+        "embeds": [],
+        "isrelatedto": [
+          "2fae6a7c-8deb-409f-80e9-656c9c2af97e"
+        ]
       },
       "c75421bc-df03-4964-87b7-b848690b1a7c": {
         "size": {
@@ -135,6 +138,29 @@
           "y": 290
         },
         "z": 14
+      },
+      "636d3456-9de3-46ed-bb70-99e84079aa64": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 420,
+          "y": 150
+        },
+        "z": 0,
+        "dependson": [
+          "e8b213de-9036-40e2-a840-c56b06d9b1bc"
+        ]
+      },
+      "a7ec74fb-7746-4bf9-9fad-5c377ad4576b": {
+        "source": {
+          "id": "636d3456-9de3-46ed-bb70-99e84079aa64"
+        },
+        "target": {
+          "id": "e8b213de-9036-40e2-a840-c56b06d9b1bc"
+        },
+        "z": 2
       }
     }
   },
@@ -165,20 +191,20 @@
             "PolicyDocument": {
               "Version": "2012-10-17",
               "Statement": [
-                 {
-                    "Sid": "Stmt1460475162000",
-                    "Effect": "Allow",
-                    "Action": [
-                        "iam:PassRole"
-                    ],
-                    "Resource": [
-                        {
-                          "Fn::GetAtt": [
-                            "AWSConfigRole",
-                            "Arn"
-                          ]
-                        }
-                    ]
+                {
+                  "Sid": "Stmt1460475162000",
+                  "Effect": "Allow",
+                  "Action": [
+                    "iam:PassRole"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
+                        "AWSConfigRole",
+                        "Arn"
+                      ]
+                    }
+                  ]
                 },
                 {
                   "Effect": "Allow",
@@ -453,28 +479,6 @@
       "DependsOn": [
         "AWSConfigRole",
         "DeliveryChannel"
-      ]
-    },
-    "CloudTrailEnabled": {
-      "Type": "AWS::Config::ConfigRule",
-      "Properties": {
-        "Source": {
-          "Owner": "AWS",
-          "SourceIdentifier": "CLOUD_TRAIL_ENABLED"
-        },
-        "InputParameters": {
-          "s3BucketName": {
-            "Ref": "CloudTrailS3Bucket"
-          }
-        }
-      },
-      "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "26a623f6-ca27-4851-bd71-577d56bd9a95"
-        }
-      },
-      "DependsOn": [
-        "ConfigurationRecorder"
       ]
     },
     "DeliveryChannel": {
