@@ -23,46 +23,40 @@ exports.handler = function (event, context) {
           port: 443,
           path: lambdaURL.pathname
         };
+
         webrequest.get(options, function(response) {
-          console.log("Got response: " + response.statusCode);
-          
+          console.log("Got response: " + response.statusCode  + ' from ' + lambdaURL.href + ' commencing download');
+            
           // Continuously update stream with data
-        var body = '';
-        response.on('data', function(d) {
-            body += d;
-        });
-        response.on('end', function() {
+          var body = '';
+          response.on('data', function(d) {
+              body += d;
+          });
+          response.on('end', function() {
 
-            // Data reception is done, do whatever with it!
-            var bucketKey = lambdaURL.pathname.replace(/^\//,'')
-            console.log("Retrieved page");
-            s3.putObject({
-              Bucket: event.BucketName,
-              Key: bucketKey,
-              ACL: 'private',
-              Body: body,
-              ContentDisposition: 'inline',
-              ContentType: 'text/plain'
-            }, function (err, data) {
-              if (err) {
-                context.fail('Error adding object to bucket ' + event.BucketName + ' - ' + JSON.stringify(err));
-              }
-              context.done(null, {
-                key: bucketKey,
-                bucketName: event.BucketName,
-                objectURL: 'https://s3-' + aws.config.region + '.amazonaws.com/' + event.BucketName + '/' + bucketKey
-
+              console.log("Finished downloading file, uploading to S3 bucket" + event.BucketName)
+              var bucketKey = lambdaURL.pathname.replace(/^\//,'')
+              s3.putObject({
+                Bucket: event.BucketName,
+                Key: bucketKey,
+                ACL: 'private',
+                Body: body,
+                ContentDisposition: 'inline',
+                ContentType: 'text/plain'
+              }, function (err, data) {
+                if (err) {
+                  context.fail('Error adding object to bucket ' + event.BucketName + ' - ' + JSON.stringify(err));
+                }
+                console.log("Upload to S3 successful")
+                context.done(null, {
+                  key: bucketKey,
+                  bucketName: event.BucketName,
+                  objectURL: 'https://s3-' + aws.config.region + '.amazonaws.com/' + event.BucketName + '/' + bucketKey
+                });
               });
-            });
-        });
-          
-          
+          });
         }).on('error', function(e) {
           console.log("Got error: " + e.message);
         });    
     })
-    
-  
-  /* Upload the object to s3
-   */
 };
