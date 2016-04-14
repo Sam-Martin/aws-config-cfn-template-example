@@ -45,11 +45,13 @@ exports.handler = function (event, context) {
               ContentType: 'text/plain'
             }, function (err, data) {
               if (err) {
-                context.fail('Error adding object to bucket ' + event.bucketName + ' - ' + JSON.stringify(err));
+                context.fail('Error adding object to bucket ' + event.BucketName + ' - ' + JSON.stringify(err));
               }
               context.done(null, {
                 key: bucketKey,
-                bucketName: event.bucketName,
+                bucketName: event.BucketName,
+                objectURL: 'https://s3-' + aws.config.region + '.amazonaws.com/' + event.BucketName + '/' + bucketKey
+
               });
             });
         });
