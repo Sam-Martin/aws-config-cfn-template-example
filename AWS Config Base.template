@@ -477,8 +477,7 @@
         }
       },
       "DependsOn": [
-        "AWSConfigRole",
-        "DeliveryChannel"
+        "AWSConfigRole"
       ]
     },
     "DeliveryChannel": {
